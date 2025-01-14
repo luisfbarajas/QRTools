@@ -1,22 +1,21 @@
-import { useState } from "react";
-import { IInput } from "../Types/interfaces";
+import React, { useState, useCallback } from 'react';
 import { Text, TextInput, View, StyleSheet } from "react-native";
 import Colors from "../Constants/Colors";
+import { IInput } from "../Types/interfaces";
 
-function InputText({ label, example }: IInput) {
-  const [inputValue, setInputValue] = useState<string>(example);
+function InputText({ label, example, onChangeText }: IInput) {
+  const [inputValue, setInputValue] = useState<string>("");
 
-  function inputHandler(input: string) {
-    console.log(`InputText: ${input}`);
-    
-    setInputValue(input);
-  }
+  const inputHandler = useCallback((input: string) => {
+    setInputValue(input.length > 0 ? input : " ");
+    onChangeText && onChangeText(input);
+  }, [onChangeText]);
+
   return (
     <View style={styles.container}>
       <View>
         <Text style={styles.label}>{label}</Text>
       </View>
-        
       <TextInput
         keyboardType="url"
         autoCapitalize="none"
@@ -25,6 +24,7 @@ function InputText({ label, example }: IInput) {
         placeholder={example}
         style={styles.input}
         onChangeText={inputHandler}
+        value={inputValue}
       />
     </View>
   );
@@ -46,7 +46,6 @@ const styles = StyleSheet.create({
     maxWidth: "80%",
     borderBottomColor: Colors.input,
     borderBottomWidth: 2,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
   },
 });

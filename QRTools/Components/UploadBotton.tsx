@@ -43,5 +43,6 @@ const style = StyleSheet.create({
   iconTextContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
 });

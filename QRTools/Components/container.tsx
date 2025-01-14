@@ -16,11 +16,8 @@ const deviceWith = Dimensions.get("window").height;
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        justifyContent: "center",
-        alignItems: "center",
         padding: 16,
         marginVertical: deviceWith < 380? 18:38,
-        marginHorizontal: 24,
         backgroundColor: Colors.white,
         borderRadius: 8,
         elevation: 4,

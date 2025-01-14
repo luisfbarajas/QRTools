@@ -3,5 +3,6 @@ export interface IContainer{
 }
 export interface IInput{
     label: string,
-    example: string
+    example: string,
+    onChangeText?: (text: string) => void
 }

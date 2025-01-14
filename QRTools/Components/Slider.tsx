@@ -1,54 +1,81 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Colors from '../Constants/Colors';
 
-function SliderComponent({text, min = 0, max = 100, step = 1, initialValue = 0, onValueChange }: {text?:string, min?: number, max?: number, step?: number, initialValue?: number, onValueChange?: (value: number) => void }){
-    const [value, setValue] = useState(initialValue);
+const SliderComponent = ({ min = 0, max = 100, step = 1, initialValue = 100, onValueChange, text = "Value" }: {
+  text?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  initialValue?: number;
+  onValueChange?: (value: number) => void;
+}) => {
+  const [value, setValue] = useState(initialValue);
+  const prevValue = useRef(value);
 
-    const handleValueChange = useCallback(
-      (newValue: number) => {
-        setValue(newValue);
-        if (onValueChange) {
-          onValueChange(newValue);
-        }
-      },
-      [onValueChange]
-    );
-  
-    return (
+  const handleValueChange = useCallback(
+    (newValue: number) => {
+      setValue(newValue);
+      if (onValueChange) {
+        onValueChange(newValue);
+      }
+    },
+    [onValueChange]
+  );
+
+  useEffect(() => {
+    if (prevValue.current !== value) {
+      console.log("SliderComponent: ", value);
+      prevValue.current = value;
+    }
+  }, [value]);
+
+  return (
+    <View>
       <View style={styles.container}>
-        <Text style={styles.label}>{text}: {value}</Text>
+        <Text style={styles.label}>
+          {text}: {value}
+        </Text>
+      </View>
+      <View style={styles.sliderContainer}>
         <Slider
           style={styles.slider}
           minimumValue={min}
           maximumValue={max}
           step={step}
           value={value}
-          onValueChange={handleValueChange}
+          onSlidingComplete={handleValueChange}
           minimumTrackTintColor={Colors.primary500}
           maximumTrackTintColor={Colors.primary800}
           thumbTintColor={Colors.primary500}
         />
       </View>
-    );
-}
+    </View>
+  );
+};
 
 export default SliderComponent;
 
 const styles = StyleSheet.create({
-    container: {
-      width: '100%',
-      alignItems: 'center',
-      marginVertical: 20,
-    },
-    label: {
-      fontSize: 16,
-      color: Colors.black,
-      marginBottom: 10,
-    },
-    slider: {
-      width: '80%',
-      height: 40,
-    },
-  });
+  container: {
+    width: 100,
+    alignItems: 'flex-start',
+    marginTop: 20,
+  },
+  label: {
+    fontSize: 16,
+    color: Colors.black,
+    marginBottom: 10,
+  },
+  sliderContainer: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+  },
+  slider: {
+    height: 40,
+    width: 250,
+    alignSelf: 'flex-start',
+  },
+});
