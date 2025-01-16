@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { View, ScrollView, StyleSheet, Alert } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, ScrollView} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Container from "./Components/container";
 import Title from "./Components/Title";
@@ -11,23 +11,80 @@ import ColorPickerComponent from "./Components/ColorPickerComponent";
 import QRCode from "react-native-qrcode-svg";
 import Colors from "./Constants/Colors";
 import ButtonPrimary from "./Components/Button";
+import ViewShot from "react-native-view-shot";
+import * as FileSystem from "expo-file-system";
+import * as MediaLibrary from "expo-media-library";
+import { PermissionStatus } from "expo-media-library";
 
 export default function App() {
   const defaultQrContent = "https://example.com";
+
   const [colorHandler, setColorHandler] = useState<string>(Colors.black);
   const [backgroundColor, setBackgroundColor] = useState<string>(Colors.white);
   const [qrContent, setQrContent] = useState<string>(defaultQrContent);
   const [size, setSize] = useState<number>(100);
+  const viewShotRef = useRef<ViewShot>(null);
 
+  /**
+   * Updates the size of the QR code.
+   * @param newSize - The new size of the QR code.
+   */
   const evaluateSize = (newSize: number) => {
     console.log("Evaluating size: ", newSize);
     setSize(newSize);
   };
+  /**
+   * Updates the content of the QR code.
+   * @param content - The new content for the QR code.
+   */
   function qrContentHandler(content: string) {
-    console.log(`QR Content: ${content}`);
+    console.debug(`QR Content: ${content}`);
     setQrContent(content);
   }
-console.debug(`ForeGround: ${colorHandler}`,`Backgroud: ${backgroundColor}`);
+  /**
+   * Captures the QR code and saves it to the media library.
+   */
+  const saveQrCode = async () => {
+    try {
+      const uri = await captureQrCode();
+      await saveToMediaLibrary(uri);
+    } catch (error) {
+      console.error("Failed to save QR Code:", error);
+    }
+  };
+  /**
+   * Captures the QR code using the ViewShot reference.
+   * @returns The URI of the captured QR code image.
+   * @throws Will throw an error if the QR code capture fails.
+   */
+  const captureQrCode = async () => {
+    const uri = viewShotRef?.current?.capture
+      ? await viewShotRef.current.capture()
+      : null;
+    if (!uri) {
+      throw new Error("Failed to capture QR code.");
+    }
+    return uri;
+  };
+  /**
+   * Saves the captured QR code image to the media library.
+   * @param uri - The URI of the captured QR code image.
+   */
+  const saveToMediaLibrary = async (uri: string) => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status === PermissionStatus.GRANTED) {
+      const timestamp = new Date().getTime();
+      const fileUri = `${FileSystem.documentDirectory}qrcode_${timestamp}.png`;
+      await FileSystem.moveAsync({
+        from: uri,
+        to: fileUri,
+      });
+      const asset = await MediaLibrary.saveToLibraryAsync(fileUri);
+      Alert.alert("Image Saved", "Image has been saved to your gallery.");
+
+      console.log("QR Code saved to media library:", fileUri);
+    }
+  };
 
   return (
     <LinearGradient colors={["#079155", "#04a3f7"]} style={styles.background}>
@@ -37,7 +94,11 @@ console.debug(`ForeGround: ${colorHandler}`,`Backgroud: ${backgroundColor}`);
           <Title>Generate your QR Code</Title>
         </View>
         <View style={styles.inputContainer}>
-          <InputText label="QR Code Content" example={qrContent} onChangeText={qrContentHandler}/>
+          <InputText
+            label="QR Code Content"
+            example={qrContent}
+            onChangeText={qrContentHandler}
+          />
         </View>
         <View style={styles.uploadButtonContainer}>
           <UploadBotton />
@@ -59,19 +120,37 @@ console.debug(`ForeGround: ${colorHandler}`,`Backgroud: ${backgroundColor}`);
           </View>
         </View>
         <View style={styles.sliderContainer}>
-          <SliderComponent text="Size" onValueChange={evaluateSize} max={250} min={50}/>
-        </View>
-        <ScrollView style={styles.qrCodeContainer} contentContainerStyle={{alignItems: "center", justifyContent: "center"}}>
-          <QRCode
-            value={qrContent || defaultQrContent}
-            size={size}
-            color={colorHandler}
-            backgroundColor={backgroundColor}
-            
+          <SliderComponent
+            text="Size"
+            onValueChange={evaluateSize}
+            max={250}
+            min={50}
           />
+        </View>
+        <ScrollView
+          style={styles.qrCodeContainer}
+          contentContainerStyle={{
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <ViewShot ref={viewShotRef} options={{ format: "png", quality: 1.0 }}>
+            <QRCode
+              value={qrContent || defaultQrContent}
+              size={size}
+              color={colorHandler}
+              backgroundColor={backgroundColor}
+              ecl="H"
+              quietZone={10}
+            />
+          </ViewShot>
         </ScrollView>
         <View style={styles.qrDonwloadButton}>
-        <ButtonPrimary text="Download QR Code" onPressHandler={() => { console.debug("Donwloading...")}} styles={styles.qrButton} containerStyle={styles.qrButtonContainer}/>
+          <ButtonPrimary
+            text="Download QR Code"
+            onPressHandler={saveQrCode}
+            styles={styles.qrButton}
+          />
         </View>
       </Container>
     </LinearGradient>
@@ -89,7 +168,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     paddingVertical: 30,
-    width: "80%",
+    width: 250,
   },
   uploadButtonContainer: {},
   colorPickersRow: {
@@ -101,10 +180,9 @@ const styles = StyleSheet.create({
     borderColor: Colors.black,
     width: 50,
   },
-  qrCodeContainer: {
-  },
+  qrCodeContainer: {},
   qrDonwloadButton: {
-    marginTop:  20,
+    marginTop: 20,
     alignItems: "center",
   },
   qrButton: {
@@ -112,5 +190,5 @@ const styles = StyleSheet.create({
   },
   qrButtonContainer: {
     width: "80%",
-  }
+  },
 });

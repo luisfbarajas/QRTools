@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import Colors from '../Constants/Colors';
+import React from "react";
+import { View, Pressable, Text, StyleSheet } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import Colors from "../Constants/Colors";
 
 function UploadBotton() {
   function onPressHandler() {
@@ -41,8 +41,8 @@ const style = StyleSheet.create({
     elevation: 2,
   },
   iconTextContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

@@ -18,10 +18,15 @@
     "react-native-color-picker": "^0.6.0",
     "react-native-color-picker-wheel": "^1.1.1",
     "react-native-color-wheel": "^0.1.7",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-qrcode-svg": "^6.3.12",
     "react-native-reanimated": "~3.16.1",
-    "reanimated-color-picker": "^3.0.6"
+    "react-native-view-shot": "^4.0.3",
+    "reanimated-color-picker": "^3.0.6",
+    "expo-file-system": "~18.0.7",
+    "expo-media-library": "~17.0.5",
+    "expo-sharing": "~13.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

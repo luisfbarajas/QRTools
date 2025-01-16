@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from "react";
 import { Text, TextInput, View, StyleSheet } from "react-native";
 import Colors from "../Constants/Colors";
 import { IInput } from "../Types/interfaces";
@@ -6,10 +6,13 @@ import { IInput } from "../Types/interfaces";
 function InputText({ label, example, onChangeText }: IInput) {
   const [inputValue, setInputValue] = useState<string>("");
 
-  const inputHandler = useCallback((input: string) => {
-    setInputValue(input.length > 0 ? input : " ");
-    onChangeText && onChangeText(input);
-  }, [onChangeText]);
+  const inputHandler = useCallback(
+    (input: string) => {
+      setInputValue(input.length > 0 ? input : " ");
+      onChangeText && onChangeText(input);
+    },
+    [onChangeText]
+  );
 
   return (
     <View style={styles.container}>
@@ -34,7 +37,7 @@ export default InputText;
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    width: '80%',
   },
   label: {
     fontSize: 14,

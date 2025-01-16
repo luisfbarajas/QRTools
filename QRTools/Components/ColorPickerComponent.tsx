@@ -16,10 +16,9 @@ export default function ColorPickerComponent({
 }) {
   const [showModal, setShowModal] = useState(false);
 
-  
   function onSelectColor({ hex }: { hex: string }) {
     setColorHandler(hex);
-  };
+  }
 
   function selectedColorHandler() {
     setShowModal(false);
@@ -33,7 +32,12 @@ export default function ColorPickerComponent({
 
       <Modal visible={showModal} animationType="slide" transparent={true}>
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContainer, { height: screenHeight * 0.5, width: screenWidth * 0.8 }]}>
+          <View
+            style={[
+              styles.modalContainer,
+              { height: screenHeight * 0.5, width: screenWidth * 0.8 },
+            ]}
+          >
             <ColorPicker
               value={color}
               onComplete={onSelectColor}
@@ -42,7 +46,10 @@ export default function ColorPickerComponent({
               <Panel1 style={styles.panel} />
               <HueSlider style={styles.hueSlider} />
             </ColorPicker>
-            <ButtonPrimary text="Select Color" onPressHandler={selectedColorHandler} />
+            <ButtonPrimary
+              text="Select Color"
+              onPressHandler={selectedColorHandler}
+            />
           </View>
         </View>
       </Modal>
@@ -62,7 +69,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
   },
   modalContainer: {
     justifyContent: "center",

@@ -1,9 +1,18 @@
 import React from "react";
-import { View, Pressable, Text, StyleSheet, StyleProp, TextStyle } from "react-native";
+import {
+  View,
+  Pressable,
+  Text,
+  StyleSheet,
+  StyleProp,
+  TextStyle,
+} from "react-native";
 import Colors from "../Constants/Colors";
 function ButtonPrimary({
   text,
-  onPressHandler, styles, containerStyle
+  onPressHandler,
+  styles,
+  containerStyle,
 }: {
   text: string;
   onPressHandler: () => void;
@@ -12,9 +21,15 @@ function ButtonPrimary({
 }) {
   return (
     <View style={[style.container, containerStyle]}>
-      <Pressable onPress={onPressHandler} style={[style.buttonOutderContainer,styles]}>
-        <View >
-          <Text style={[style.buttonText, style.iconTextContainer]}> {text}</Text>
+      <Pressable
+        onPress={onPressHandler}
+        style={[style.buttonOutderContainer, styles]}
+      >
+        <View>
+          <Text style={[style.buttonText, style.iconTextContainer]}>
+            {" "}
+            {text}
+          </Text>
         </View>
       </Pressable>
     </View>
@@ -40,6 +55,6 @@ const style = StyleSheet.create({
     elevation: 2,
   },
   iconTextContainer: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
