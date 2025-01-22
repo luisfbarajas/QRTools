@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal, StyleSheet, View, Dimensions } from "react-native";
 import ButtonPrimary from "./Button";
 import ColorPicker, { Panel1, HueSlider } from "reanimated-color-picker";
+import { IColorPicker } from "../Types/interfaces";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get("window");
 
@@ -9,11 +10,7 @@ export default function ColorPickerComponent({
   label,
   color,
   setColorHandler,
-}: {
-  label: string;
-  color: string;
-  setColorHandler: (color: string) => void;
-}) {
+}: IColorPicker) {
   const [showModal, setShowModal] = useState(false);
 
   function onSelectColor({ hex }: { hex: string }) {

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { View, ScrollView, StyleSheet, Alert } from "react-native";
+import { View, ScrollView, StyleSheet, Alert, KeyboardAvoidingView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
 import Container from "./Components/container";
@@ -12,9 +12,8 @@ import QRCode from "react-native-qrcode-svg";
 import Colors from "./Constants/Colors";
 import ButtonPrimary from "./Components/Button";
 import ViewShot from "react-native-view-shot";
-import * as FileSystem from "expo-file-system";
-import * as MediaLibrary from "expo-media-library";
-import { PermissionStatus } from "expo-media-library";
+import { MediaFile } from "./src/layers/MediaFile";
+
 
 export default function App() {
   const defaultQrContent = "https://example.com";
@@ -24,6 +23,7 @@ export default function App() {
   const [qrContent, setQrContent] = useState<string>(defaultQrContent);
   const [size, setSize] = useState<number>(100);
   const viewShotRef = useRef<ViewShot>(null);
+  const mediaFile = new MediaFile();
 
   /**
    * Updates the size of the QR code.
@@ -47,9 +47,11 @@ export default function App() {
   const saveQrCode = async () => {
     try {
       const uri = await captureQrCode();
-      await saveToMediaLibrary(uri);
+      const x =await mediaFile.onSavedQrCode(uri);
+      Alert.alert("Image Saved", "Image has been saved to your gallery.");
     } catch (error) {
       console.error("Failed to save QR Code:", error);
+      Alert.alert("Failed to save", "Something was wrong try again in a minute.");
     }
   };
   /**
@@ -66,29 +68,12 @@ export default function App() {
     }
     return uri;
   };
-  /**
-   * Saves the captured QR code image to the media library.
-   * @param uri - The URI of the captured QR code image.
-   */
-  const saveToMediaLibrary = async (uri: string) => {
-    const { status } = await MediaLibrary.requestPermissionsAsync();
-    if (status === PermissionStatus.GRANTED) {
-      const timestamp = new Date().getTime();
-      const fileUri = `${FileSystem.documentDirectory}qrcode_${timestamp}.png`;
-      await FileSystem.moveAsync({
-        from: uri,
-        to: fileUri,
-      });
-      const asset = await MediaLibrary.saveToLibraryAsync(fileUri);
-      Alert.alert("Image Saved", "Image has been saved to your gallery.");
 
-      console.log("QR Code saved to media library:", fileUri);
-    }
-  };
 
   return (
     <LinearGradient colors={["#079155", "#04a3f7"]} style={styles.background}>
       <StatusBar style="light" />
+      <KeyboardAvoidingView>
       <Container>
         <View style={styles.titleContainer}>
           <Title>Generate your QR Code</Title>
@@ -153,6 +138,7 @@ export default function App() {
           />
         </View>
       </Container>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 }

@@ -1,9 +1,18 @@
-import { StyleSheet, View, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  KeyboardAvoidingView,
+} from "react-native";
 import Colors from "../Constants/Colors";
 import { IContainer } from "../Types/interfaces";
 
 function Container({ children }: IContainer) {
-  return <View style={styles.container}>{children}</View>;
+  return (
+    <KeyboardAvoidingView>
+      <View style={styles.container}>{children}</View>
+    </KeyboardAvoidingView>
+  );
 }
 
 export default Container;

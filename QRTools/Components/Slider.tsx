@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Slider from "@react-native-community/slider";
 import Colors from "../Constants/Colors";
+import { ISlider } from "../Types/interfaces";
 
 const SliderComponent = ({
   min = 0,
@@ -10,14 +11,7 @@ const SliderComponent = ({
   initialValue = 100,
   onValueChange,
   text = "Value",
-}: {
-  text?: string;
-  min?: number;
-  max?: number;
-  step?: number;
-  initialValue?: number;
-  onValueChange?: (value: number) => void;
-}) => {
+}: ISlider) => {
   const [value, setValue] = useState(initialValue);
   const prevValue = useRef(value);
 
