@@ -19,6 +19,7 @@ function InputText({ label, example, onChangeText }: IInput) {
       <View>
         <Text style={styles.label}>{label}</Text>
       </View>
+      <View style={styles.container}>
       <TextInput
         keyboardType="url"
         autoCapitalize="none"
@@ -29,6 +30,8 @@ function InputText({ label, example, onChangeText }: IInput) {
         onChangeText={inputHandler}
         value={inputValue}
       />
+        </View>
+    
     </View>
   );
 }
@@ -37,7 +40,7 @@ export default InputText;
 
 const styles = StyleSheet.create({
   container: {
-    width: '80%',
+    width: '100%',
   },
   label: {
     fontSize: 14,
@@ -51,4 +54,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     fontWeight: 'bold',
   },
+  inputContainer:{
+    alignItems: 'center',
+  }
 });

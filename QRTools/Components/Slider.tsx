@@ -27,7 +27,7 @@ const SliderComponent = ({
 
   useEffect(() => {
     if (prevValue.current !== value) {
-      console.log("SliderComponent: ", value);
+      console.debug("SliderComponent: ", value);
       prevValue.current = value;
     }
   }, [value]);

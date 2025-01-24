@@ -11,6 +11,7 @@ export class MediaFile implements IMediaFile {
   private readonly K_QUALITY: number;
   private readonly K_ASPECT: [number, number];
   private readonly K_ALLOWS_EDITING: boolean;
+  
   constructor(
     mediaType: ImagePicker.MediaType = "images",
     quality: number = 1,

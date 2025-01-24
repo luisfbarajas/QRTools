@@ -3,9 +3,11 @@ import { View, Pressable, Text, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Colors from "../Constants/Colors";
 
-function UploadBotton() {
+function UploadBotton({onLoading}: {onLoading: () => void}) {
   function onPressHandler() {
-    console.log("Presionado");
+    console.time("Image Loading");
+    onLoading();
+    console.timeEnd("Image Loading");
   }
 
   return (
