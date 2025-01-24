@@ -1,3 +1,4 @@
+// React imports
 import React, { useRef, useState, useCallback } from "react";
 import {
   View,
@@ -7,24 +8,28 @@ import {
   KeyboardAvoidingView,
   Dimensions
 } from "react-native";
+// Expo imports
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
+// Custom components
 import Container from "./Components/container";
 import Title from "./Components/Title";
 import InputText from "./Components/InputText";
 import UploadBotton from "./Components/UploadBotton";
 import SliderComponent from "./Components/Slider";
 import ColorPickerComponent from "./Components/ColorPickerComponent";
-import QRCode from "react-native-qrcode-svg";
 import Colors from "./Constants/Colors";
 import ButtonPrimary from "./Components/Button";
+// QR Code imports
+import QRCode from "react-native-qrcode-svg";
 import ViewShot from "react-native-view-shot";
+// Class imports
 import { MediaFile } from "./src/layers/MediaFile";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get("window");
+const defaultQrContent = "https://example.com";
 
 export default function App() {
-  const defaultQrContent = "https://example.com";
 
   const [colorHandler, setColorHandler] = useState<string>(Colors.black);
   const [backgroundColor, setBackgroundColor] = useState<string>(Colors.white);
@@ -38,14 +43,14 @@ export default function App() {
    * Updates the size of the QR code.
    * @param newSize - The new size of the QR code.
    */
-  const evaluateSize = (newSize: number) => {
+  const evaluateSize = useCallback((newSize: number) => {
     console.debug("Evaluating size: ", newSize);
     setSize(newSize);
-  };
+  }, []);
   /**
    * Handles the loading of the image.
    */
-  async function imageLoadingHandler() {
+  const imageLoadingHandler = useCallback(async () => {
     console.debug("Image Loading");
     try {
       const uri = await mediaFile.onLoading();
@@ -61,7 +66,7 @@ export default function App() {
       console.error("Failed to load image: ", error);
       setLogo("");
     }
-  }
+  }, [mediaFile]);
   /**
    * Updates the content of the QR code.
    * @param content - The new content for the QR code.
@@ -70,11 +75,24 @@ export default function App() {
     console.debug(`QR Content: ${content}`);
     setQrContent(content);
   }, []);
-
+  /**
+   * Captures the QR code using the ViewShot reference.
+   * @returns The URI of the captured QR code image.
+   * @throws Will throw an error if the QR code capture fails.
+   */
+  const captureQrCode = useCallback(async () => {
+    const uri = viewShotRef?.current?.capture
+      ? await viewShotRef.current.capture()
+      : null;
+    if (!uri) {
+      throw new Error("Failed to capture QR code.");
+    }
+    return uri;
+  }, []);
   /**
    * Captures the QR code and saves it to the media library.
    */
-  const saveQrCode = async () => {
+  const saveQrCode = useCallback(async () => {
     try {
       const uri = await captureQrCode();
       await mediaFile.onSavedQrCode(uri);
@@ -86,21 +104,8 @@ export default function App() {
         "Something was wrong try again in a minute."
       );
     }
-  };
-  /**
-   * Captures the QR code using the ViewShot reference.
-   * @returns The URI of the captured QR code image.
-   * @throws Will throw an error if the QR code capture fails.
-   */
-  const captureQrCode = async () => {
-    const uri = viewShotRef?.current?.capture
-      ? await viewShotRef.current.capture()
-      : null;
-    if (!uri) {
-      throw new Error("Failed to capture QR code.");
-    }
-    return uri;
-  };
+  }, [captureQrCode, mediaFile]);
+
 
   return (
     <LinearGradient colors={["#079155", "#04a3f7"]} style={styles.background}>
@@ -168,7 +173,7 @@ export default function App() {
               />
             </ViewShot>
           </ScrollView>
-          <View style={styles.qrDonwloadButton}>
+          <View style={styles.qrDownloadButton}>
             <ButtonPrimary
               text="Download QR Code"
               onPressHandler={saveQrCode}
@@ -204,7 +209,7 @@ const styles = StyleSheet.create({
     width: 50,
   },
   qrCodeContainer: {},
-  qrDonwloadButton: {
+  qrDownloadButton: {
     marginTop: 20,
     alignItems: "center",
   },
