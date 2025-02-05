@@ -1,12 +1,13 @@
 // React imports
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback} from "react";
 import {
   View,
   ScrollView,
   StyleSheet,
   Alert,
   KeyboardAvoidingView,
-  Dimensions
+  Dimensions,
+  Platform
 } from "react-native";
 // Expo imports
 import { StatusBar } from "expo-status-bar";
@@ -25,9 +26,15 @@ import QRCode from "react-native-qrcode-svg";
 import ViewShot from "react-native-view-shot";
 // Class imports
 import { MediaFile } from "./src/layers/MediaFile";
+//Ads imports
+// import MobileAds,{BannerAd,BannerAdSize,useForeground,TestIds} from "react-native-google-mobile-ads";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get("window");
 const defaultQrContent = "https://example.com";
+
+// const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : "ca-app-pub-3940256099942544/6300978111";
+
+
 
 export default function App() {
 
@@ -38,6 +45,12 @@ export default function App() {
   const [logo, setLogo] = useState<string>("");
   const viewShotRef = useRef<ViewShot>(null);
   const mediaFile = new MediaFile();
+
+  // const bannerRef = useRef<BannerAd | null>(null);
+
+  // useForeground(() => {
+  //   Platform.OS === "android" && bannerRef.current?.load();
+  // });
 
   /**
    * Updates the size of the QR code.
@@ -181,6 +194,7 @@ export default function App() {
             />
           </View>
         </Container>
+        {/* <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} /> */}
       </KeyboardAvoidingView>
     </LinearGradient>
   );
