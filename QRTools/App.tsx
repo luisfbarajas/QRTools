@@ -1,5 +1,5 @@
 // React imports
-import React, { useRef, useState, useCallback} from "react";
+import React, { useRef, useState, useCallback } from "react";
 import {
   View,
   ScrollView,
@@ -7,11 +7,16 @@ import {
   Alert,
   KeyboardAvoidingView,
   Dimensions,
-  Platform
+  Platform,
 } from "react-native";
 // Expo imports
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
+import * as ImagePicker from "expo-image-picker";
+import { PermissionStatus } from "expo-media-library";
+import * as MediaLibrary from "expo-media-library";
+import * as FileSystem from "expo-file-system";
+
 // Custom components
 import Container from "./Components/container";
 import Title from "./Components/Title";
@@ -25,32 +30,36 @@ import ButtonPrimary from "./Components/Button";
 import QRCode from "react-native-qrcode-svg";
 import ViewShot from "react-native-view-shot";
 // Class imports
-import { MediaFile } from "./src/layers/MediaFile";
+// import { MediaFile } from "./src/layers/MediaFile";
 //Ads imports
-// import MobileAds,{BannerAd,BannerAdSize,useForeground,TestIds} from "react-native-google-mobile-ads";
+import {
+  BannerAd,
+  BannerAdSize,
+  useForeground,
+  TestIds,
+} from "react-native-google-mobile-ads";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get("window");
 const defaultQrContent = "https://example.com";
 
-// const adUnitId = __DEV__ ? TestIds.ADAPTIVE_BANNER : "ca-app-pub-3940256099942544/6300978111";
-
-
+// const adUnitId = __DEV__
+//   ? TestIds.BANNER
+//   : "ca-app-pub-3940256099942544/6300978111";
 
 export default function App() {
-
   const [colorHandler, setColorHandler] = useState<string>(Colors.black);
   const [backgroundColor, setBackgroundColor] = useState<string>(Colors.white);
   const [qrContent, setQrContent] = useState<string>(defaultQrContent);
   const [size, setSize] = useState<number>(100);
   const [logo, setLogo] = useState<string>("");
   const viewShotRef = useRef<ViewShot>(null);
-  const mediaFile = new MediaFile();
+  // const mediaFile = new MediaFile();
 
-  // const bannerRef = useRef<BannerAd | null>(null);
+  const bannerRef = useRef<BannerAd | null>(null);
 
-  // useForeground(() => {
-  //   Platform.OS === "android" && bannerRef.current?.load();
-  // });
+  useForeground(() => {
+    Platform.OS === "android" && bannerRef.current?.load();
+  });
 
   /**
    * Updates the size of the QR code.
@@ -65,21 +74,34 @@ export default function App() {
    */
   const imageLoadingHandler = useCallback(async () => {
     console.debug("Image Loading");
+    console.log("Image Loading started");
+    
     try {
-      const uri = await mediaFile.onLoading();
-      console.log("URI: ", uri);
-      if (uri !== "") {
-        console.log("Image loaded successfully");
-        setLogo(uri);
-      } else {
-        console.log("Image loading failed");
-        setLogo("");
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status === PermissionStatus.GRANTED) {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: "images",
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+        const uri = !result.canceled ? result?.assets[0].uri : "";
+
+        console.log("URI: ", uri);
+        if (uri !== "") {
+          console.log("Image loaded successfully");
+          setLogo(uri);
+        } else {
+          console.log("Image loading failed");
+          setLogo("");
+        }
       }
     } catch (error) {
       console.error("Failed to load image: ", error);
       setLogo("");
     }
-  }, [mediaFile]);
+  }, []);
   /**
    * Updates the content of the QR code.
    * @param content - The new content for the QR code.
@@ -106,10 +128,24 @@ export default function App() {
    * Captures the QR code and saves it to the media library.
    */
   const saveQrCode = useCallback(async () => {
+    console.log("Saving QR Code");
+    
     try {
       const uri = await captureQrCode();
-      await mediaFile.onSavedQrCode(uri);
-      Alert.alert("Image Saved", "Image has been saved to your gallery.");
+      // await mediaFile.onSavedQrCode(uri);
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status === PermissionStatus.GRANTED) {
+        const timestamp = new Date().getTime();
+        const fileUri = `${FileSystem.documentDirectory}qrcode_${timestamp}.png`;
+        await FileSystem.moveAsync({
+          from: uri,
+          to: fileUri,
+        });
+        const asset = await MediaLibrary.saveToLibraryAsync(fileUri);
+        Alert.alert("Image Saved", "Image has been saved to your gallery.");
+        console.log("QR Code saved to media library:", fileUri);
+        Alert.alert("Image Saved", "Image has been saved to your gallery.");
+      }
     } catch (error) {
       console.error("Failed to save QR Code:", error);
       Alert.alert(
@@ -117,8 +153,7 @@ export default function App() {
         "Something was wrong try again in a minute."
       );
     }
-  }, [captureQrCode, mediaFile]);
-
+  }, [captureQrCode]);
 
   return (
     <LinearGradient colors={["#079155", "#04a3f7"]} style={styles.background}>
@@ -193,8 +228,14 @@ export default function App() {
               styles={styles.qrButton}
             />
           </View>
+          <View style={styles.qrDownloadButton}>
+            <BannerAd
+              ref={bannerRef}
+              unitId={TestIds.BANNER}
+              size={BannerAdSize.BANNER}
+            />
+          </View>
         </Container>
-        {/* <BannerAd ref={bannerRef} unitId={adUnitId} size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER} /> */}
       </KeyboardAvoidingView>
     </LinearGradient>
   );

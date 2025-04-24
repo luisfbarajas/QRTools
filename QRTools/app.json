@@ -17,10 +17,10 @@
           },
           "android": {
             "extraProguardRules": "-keep class com.google.android.gms.internal.consent_sdk.** { *; }",
-            "kotlinVersion": "1.6.10",
-            "compileSdkVersion": 34,
-            "minSdkVersion": 34,
-            "targetSdkVersion": 34,
+            "kotlinVersion": "1.7.20",
+            "compileSdkVersion": 33,
+            "minSdkVersion": 23,
+            "targetSdkVersion": 33,
             "buildToolsVersion": "34.0.0"
           }
         }
@@ -49,26 +49,25 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "builddNumber":"1.0.0",
       "supportsTablet": true,
       "infoPlist": {
         "NSPhotoLibraryAddUsageDescription": "We need your permission to save QR codes to your photo library",
-        "NSPhotoLibraryUsageDescription": "We need your permission to access your photo library"
-      }
+        "NSPhotoLibraryUsageDescription": "We need your permission to access your photo library",
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "bundleIdentifier": "com.lbarajas.QRTools"
     },
     "android": {
-      "versionCode":1.0,
+      "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "permissions": [
         "WRITE_EXTERNAL_STORAGE",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
         "READ_EXTERNAL_STORAGE"
       ],
-      "package": "com.anonymous.QRTools"
+      "package": "com.lbarajas.QRTools"
     },
     "web": {
       "favicon": "./assets/favicon.png"
